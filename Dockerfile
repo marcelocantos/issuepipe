@@ -1,7 +1,9 @@
-# Ubuntu 24.04 ships g++ ≥13 with C++23 <format>, required by sqlpipe.
+# Build and run on the same base so the CGO binary's glibc matches.
+# Ubuntu 24.04: g++ ≥13 with C++23 <format> (required by sqlpipe).
 FROM ubuntu:24.04 AS build
 WORKDIR /src
 
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates curl g++ make \
  && rm -rf /var/lib/apt/lists/* \
@@ -15,8 +17,8 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=1 go build -o /issuepipe ./cmd/issuepipe
 
-# Runtime needs libstdc++ for the CGO-linked sqlpipe binary.
-FROM debian:bookworm-slim
+FROM ubuntu:24.04
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates libstdc++6 \
  && rm -rf /var/lib/apt/lists/* \
