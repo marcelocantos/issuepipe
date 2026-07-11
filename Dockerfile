@@ -1,9 +1,13 @@
-FROM golang:1.25-bookworm AS build
+# Ubuntu 24.04 ships g++ ≥13 with C++23 <format>, required by sqlpipe.
+FROM ubuntu:24.04 AS build
 WORKDIR /src
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    g++ make ca-certificates \
- && rm -rf /var/lib/apt/lists/*
+    ca-certificates curl g++ make \
+ && rm -rf /var/lib/apt/lists/* \
+ && curl -fsSL https://go.dev/dl/go1.25.7.linux-amd64.tar.gz \
+    | tar -C /usr/local -xz
+ENV PATH=/usr/local/go/bin:$PATH
 
 COPY go.mod go.sum ./
 RUN go mod download
