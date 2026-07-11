@@ -1,7 +1,3 @@
-# Build with the sqlpipe repo as an extra context, e.g.:
-#   docker build -t issuepipe \
-#     --build-context sqlpipe=../sqlpipe \
-#     .
 FROM golang:1.25-bookworm AS build
 WORKDIR /src
 
@@ -10,9 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && rm -rf /var/lib/apt/lists/*
 
 COPY go.mod go.sum ./
-COPY --from=sqlpipe / /sqlpipe
-RUN printf '\nreplace github.com/marcelocantos/sqlpipe/go/sqlpipe => /sqlpipe/go/sqlpipe\n' >> go.mod \
- && go mod download
+RUN go mod download
 
 COPY . .
 RUN CGO_ENABLED=1 go build -o /issuepipe ./cmd/issuepipe
