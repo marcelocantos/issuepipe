@@ -1,0 +1,14 @@
+/bin/
+/dist/
+/data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.orig
+.env
+.claude/
