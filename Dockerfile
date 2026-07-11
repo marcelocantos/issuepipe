@@ -15,8 +15,10 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=1 go build -o /issuepipe ./cmd/issuepipe
 
+# Runtime needs libstdc++ for the CGO-linked sqlpipe binary.
 FROM debian:bookworm-slim
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates libstdc++6 \
  && rm -rf /var/lib/apt/lists/* \
  && mkdir -p /data
 COPY --from=build /issuepipe /issuepipe

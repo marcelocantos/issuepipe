@@ -13,7 +13,10 @@ primary_region = "syd"
   internal_port = 8080
   protocol = "tcp"
   auto_start_machines = true
-  auto_stop_machines = "stop"
+  # Keep the Master warm so webhooks are not dropped while the machine
+  # is cold-starting (GitHub retries, but prefer always-on for Stage 1).
+  auto_stop_machines = "off"
+  min_machines_running = 1
 
   [[services.ports]]
     port = 443
