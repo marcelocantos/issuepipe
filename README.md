@@ -1,13 +1,18 @@
 # issuepipe
 
-Fly-hosted **sqlpipe Master** that ingests GitHub App **issue webhooks** into
+Fly-hosted **sqlpipe Master** that ingests GitHub **issue webhooks** into
 per-repo SQLite tables.
 
 This is Stage 1 of the bullseye GitHub-issues integration (🎯T31):
 
 ```
-GitHub App webhooks → issuepipe (Fly Master) → sqlpipe Replicas (localhost)
+Repo webhooks → issuepipe (Fly Master) → sqlpipe Replicas (localhost)
 ```
+
+**Transport decision (2026-07-18):** Stage 1 uses **repo webhooks** (agent can
+register them via `gh`). A GitHub App is deferred until bullseye 🎯T32
+(user auth / installation tokens). Same `POST /webhook/github` + HMAC
+either way.
 
 Per-repo table/DB partitioning is intentional: later auth (🎯T32) scopes each
 Replica to the connecting user's GitHub-readable repos at ownership
@@ -15,9 +20,9 @@ granularity inside the convergence boundary.
 
 ## Status
 
-v0.1.0 — local service + tests for HMAC verification, idempotent upserts,
-per-repo Master files, and cold-start backfill. Fly deploy and App
-installation token exchange land next.
+Live: https://issuepipe.fly.dev — health + HMAC-verified webhooks.
+v0.1.0 tests cover signature reject, idempotent upserts, per-repo Masters,
+and cold-start backfill.
 
 ## Quick start
 
